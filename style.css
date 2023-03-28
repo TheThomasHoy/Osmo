@@ -1,0 +1,27 @@
+/* Define the color palette */
+:root {
+  --green: #00A388;
+  --blue: #00BFFF;
+  --light-blue: #BFEFFF;
+  --gray: #D6D6D6;
+  --dark-gray: #707070;
+}
+
+/* Apply the colors to various elements */
+body {
+  background-color: var(--light-blue);
+}
+
+#video-container {
+  background-color: var(--gray);
+}
+
+.moisture-level {
+  color: var(--green);
+}
+
+.pump-status {
+  color: var(--dark-gray);
+}
+
+/* Add any other styles you want */
