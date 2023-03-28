@@ -1,10 +1,13 @@
+from flask import Flask, render_template, Response
 import RPi.GPIO as GPIO
 import time 
 import Adafruit_ADS1x15 
 import math
-adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
-#adc = Adafruit_ADS1x15.ADS1115()
+import cv2
 
+app = Flask(__name__)
+
+adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
 GAIN = 1
 PIN = 7
 
@@ -14,34 +17,40 @@ def setup():
     GPIO.output(PIN, GPIO.HIGH)
     time.sleep(0.1)
 
-values = [0]*100
+def read_moisture():
+    values = [0]*100
+    for i in range(100):
+        values[i] = adc.read_adc(0, gain=GAIN)
+    return max(values)
 
-def loop():
+def gen_frames():
+    cap = cv2.VideoCapture(0)
     while True:
-        for i in range(100):
-            values[i]=adc.read_adc(0,gain=GAIN)
-        print(max(values))
-		
-        if (max(values))>21400: #when sensor reads above 21,400 soil is dry so pump is turned on
-            GPIO.output(PIN, GPIO.LOW) # Var PIN(pin number 7) is the GPIO pin for relay which flicks on and off the pump 
-            print("Pump is on") 
-            print(PIN)
-            time.sleep(0.1)
+        success, frame = cap.read()
+        if not success:
+            break
         else:
-            GPIO.output(PIN,GPIO.HIGH) #when sensors reads below 21,400, soil is saturated so pump is turned off
-            print("Pump is off")
-            print(PIN)
-            time.sleep(0.1)
-			
-def destroy():
-    GPIO.output(PIN, GPIO.HIGH)
-    GPIO.cleanup()
+            # Encoding the image in JPEG format
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/')
+def index():
+    moisture_level = read_moisture()
+    if moisture_level > 21400:
+        GPIO.output(PIN, GPIO.LOW)
+        pump_status = 'on'
+    else:
+        GPIO.output(PIN, GPIO.HIGH)
+        pump_status = 'off'
+    return render_template('index.html', moisture_level=moisture_level, pump_status=pump_status)
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     setup()
-    try:
-        loop()
-    except KeyboardInterrupt:
-        print("Keyboard interrupt detected.")
-    finally:
-        destroy()
+    app.run(host='0.0.0.0', port=5000, debug=True)
