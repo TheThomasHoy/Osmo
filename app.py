@@ -4,7 +4,6 @@ import time
 import Adafruit_ADS1x15 
 import math
 import cv2
-from flask import Flask, Response, render_template
 
 app = Flask(__name__)
 
@@ -24,9 +23,7 @@ def read_moisture():
         values[i] = adc.read_adc(0, gain=GAIN)
     return max(values)
 
-# Define generator function for video frames
 def gen_frames():
-    # OpenCV video camera object
     cap = cv2.VideoCapture(0)
     while True:
         success, frame = cap.read()
@@ -36,19 +33,23 @@ def gen_frames():
             # Encoding the image in JPEG format
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
-            # Yield the frame in bytes
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-# Return the response with the video stream embedded in the HTML template
-@app.route('/camera')
-def camera_object():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-# Flask route for camera stream
 @app.route('/')
 def index():
-    return render_template('stream.html')
+    moisture_level = read_moisture()
+    if moisture_level > 21400:
+        GPIO.output(PIN, GPIO.LOW)
+        pump_status = 'on'
+    else:
+        GPIO.output(PIN, GPIO.HIGH)
+        pump_status = 'off'
+    return render_template('index.html', moisture_level=moisture_level, pump_status=pump_status)
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     setup()
