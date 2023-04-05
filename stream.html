@@ -1,0 +1,19 @@
+<!doctype html>
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>OpenCV Camera Stream</h2>
+    {% if not stream_running %}
+        <form method="POST" action="{{ url_for('start_stream') }}">
+            <button type="submit">Start Stream</button>
+        </form>
+    {% else %}
+        <form method="POST" action="{{ url_for('stop_stream') }}">
+            <button type="submit">Stop Stream</button>
+        </form>
+        <img src="{{ url_for('camera_object') }}">
+        <form method="POST" action="{{ url_for('take_screenshot') }}">
+            <button type="submit">Take Screenshot</button>
+        </form>
+    {% endif %}
+{% endblock %}
