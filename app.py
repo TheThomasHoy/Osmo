@@ -1,6 +1,7 @@
 import cv2
 import os
 import time
+import threading
 import RPi.GPIO as GPIO
 import Adafruit_ADS1x15 
 from flask import Flask, Response, render_template, jsonify
@@ -40,19 +41,19 @@ def camera_object():
 
 @app.route('/')
 def index():
-    return render_template('stream.html', stream_running=stream_running)
+    return render_template('index.html', stream_running=stream_running)
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream():
     global stream_running
     stream_running = True
-    return render_template('stream.html', stream_running=stream_running)
+    return render_template('index.html', stream_running=stream_running)
 
 @app.route('/stop_stream', methods=['POST'])
 def stop_stream():
     global stream_running
     stream_running = False
-    return render_template('stream.html', stream_running=stream_running)
+    return render_template('index.html', stream_running=stream_running)
 
 @app.route('/take_screenshot', methods=['POST'])
 def take_screenshot():
@@ -81,13 +82,13 @@ def loop():
 
         if max(values) > 21400: 
             GPIO.output(PIN, GPIO.LOW)
-            print("Pump is on") 
-            print(PIN)
+           # print("Pump is on") 
+           # print(PIN)
             time.sleep(0.1)
         else:
             GPIO.output(PIN, GPIO.HIGH)
-            print("Pump is off")
-            print(PIN)
+           # print("Pump is off")
+           # print(PIN)
             time.sleep(0.1)
 
 def destroy():
@@ -100,10 +101,9 @@ if __name__ == '__main__':
         loop_thread = threading.Thread(target=loop)
         loop_thread.start()
         app.run(host='0.0.0.0', port=5000, debug=True)
+        stream_running = False
+        loop_thread.join()
     except KeyboardInterrupt:
         print("Keyboard interrupt detected.")
     finally:
-        stream_running = False
-        loop_thread.join()
         destroy()
-
