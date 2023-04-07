@@ -96,4 +96,14 @@ def destroy():
 
 if __name__ == '__main__':
     setup()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    try:
+        loop_thread = threading.Thread(target=loop)
+        loop_thread.start()
+        app.run(host='0.0.0.0', port=5000, debug=True)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt detected.")
+    finally:
+        stream_running = False
+        loop_thread.join()
+        destroy()
+
