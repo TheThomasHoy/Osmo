@@ -1,13 +1,18 @@
-from flask import Flask, render_template, Response
-import RPi.GPIO as GPIO
-import time 
-import Adafruit_ADS1x15 
-import math
 import cv2
+import os
+import time
+import RPi.GPIO as GPIO
+import Adafruit_ADS1x15 
+from flask import Flask, Response, render_template, jsonify
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='/static',
+            static_folder='static')
 
+cap = cv2.VideoCapture(0)
+stream_running = False
 adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
+
 GAIN = 1
 PIN = 7
 
@@ -17,39 +22,77 @@ def setup():
     GPIO.output(PIN, GPIO.HIGH)
     time.sleep(0.1)
 
-def read_moisture():
-    values = [0]*100
-    for i in range(100):
-        values[i] = adc.read_adc(0, gain=GAIN)
-    return max(values)
+values = [0]*100
 
 def gen_frames():
-    cap = cv2.VideoCapture(0)
-    while True:
+    while stream_running:
         success, frame = cap.read()
         if not success:
             break
-        else:
-            # Encoding the image in JPEG format
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/camera')
+def camera_object():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/')
 def index():
-    moisture_level = read_moisture()
-    if moisture_level > 21400:
-        GPIO.output(PIN, GPIO.LOW)
-        pump_status = 'on'
-    else:
-        GPIO.output(PIN, GPIO.HIGH)
-        pump_status = 'off'
-    return render_template('index.html', moisture_level=moisture_level, pump_status=pump_status)
+    return render_template('stream.html', stream_running=stream_running)
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/start_stream', methods=['POST'])
+def start_stream():
+    global stream_running
+    stream_running = True
+    return render_template('stream.html', stream_running=stream_running)
+
+@app.route('/stop_stream', methods=['POST'])
+def stop_stream():
+    global stream_running
+    stream_running = False
+    return render_template('stream.html', stream_running=stream_running)
+
+@app.route('/take_screenshot', methods=['POST'])
+def take_screenshot():
+    success, frame = cap.read()
+    if success:
+        filename = 'screenshot_{}.jpg'.format(int(time.time()))
+        cv2.imwrite(os.path.join(app.static_folder, 'screenshots', filename), frame)
+        app.logger.info('Screenshot saved as {}'.format(filename))
+        message = 'Screenshot saved as {}'.format(filename)
+        button = '<button onclick="location.href=\'/\'">Back to Osmo Dashboard</button>'
+        return message + '<br>' + button
+    else:
+        return 'Error taking screenshot'
+
+@app.route('/data')
+def data():
+    moisture = max(values)
+    pump_status = 'on' if GPIO.input(PIN) == 0 else 'off'
+    return jsonify(moisture=moisture, pump_status=pump_status)
+
+def loop():
+    while True:
+        for i in range(100):
+            values[i]=adc.read_adc(0,gain=GAIN)
+        print(max(values))
+
+        if max(values) > 21400: 
+            GPIO.output(PIN, GPIO.LOW)
+            print("Pump is on") 
+            print(PIN)
+            time.sleep(0.1)
+        else:
+            GPIO.output(PIN, GPIO.HIGH)
+            print("Pump is off")
+            print(PIN)
+            time.sleep(0.1)
+
+def destroy():
+    GPIO.output(PIN, GPIO.HIGH)
+    GPIO.cleanup()
 
 if __name__ == '__main__':
     setup()
