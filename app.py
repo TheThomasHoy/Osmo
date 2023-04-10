@@ -2,13 +2,19 @@ import cv2
 import os
 import time
 import threading
+from threading import Lock
 import RPi.GPIO as GPIO
 import Adafruit_ADS1x15 
 from flask import Flask, Response, render_template, jsonify
+from concurrent.futures import ThreadPoolExecutor
+
+gpio_lock = Lock()
 
 app = Flask(__name__,
             static_url_path='/static',
             static_folder='static')
+
+executor = ThreadPoolExecutor(max_workers=1)
 
 cap = cv2.VideoCapture(0)
 stream_running = False
@@ -18,10 +24,11 @@ GAIN = 1
 PIN = 7
 
 def setup():
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(PIN, GPIO.OUT)
-    GPIO.output(PIN, GPIO.HIGH)
-    time.sleep(0.1)
+    with gpio_lock:
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(PIN, GPIO.OUT)
+        GPIO.output(PIN, GPIO.HIGH)
+        time.sleep(0.1)
 
 values = [0]*100
 
@@ -76,20 +83,21 @@ def data():
 
 def loop():
     while True:
-        for i in range(100):
-            values[i]=adc.read_adc(0,gain=GAIN)
-        print(max(values))
+        with gpio_lock:
+            for i in range(100):
+                values[i] = adc.read_adc(0, gain=GAIN)
+            print(max(values))
 
-        if max(values) > 21400: 
-            GPIO.output(PIN, GPIO.LOW)
-           # print("Pump is on") 
-           # print(PIN)
-            time.sleep(0.1)
-        else:
-            GPIO.output(PIN, GPIO.HIGH)
-           # print("Pump is off")
-           # print(PIN)
-            time.sleep(0.1)
+            if max(values) > 21400:
+                GPIO.output(PIN, GPIO.LOW)
+                # print("Pump is on")
+                # print(PIN)
+                time.sleep(0.1)
+            else:
+                GPIO.output(PIN, GPIO.HIGH)
+                # print("Pump is off")
+                # print(PIN)
+                time.sleep(0.1)
 
 def destroy():
     GPIO.output(PIN, GPIO.HIGH)
@@ -98,11 +106,10 @@ def destroy():
 if __name__ == '__main__':
     setup()
     try:
-        loop_thread = threading.Thread(target=loop)
-        loop_thread.start()
-        app.run(host='0.0.0.0', port=5000, debug=True)
+        future = executor.submit(loop)
+        app.run(host='0.0.0.0', port=5000)
         stream_running = False
-        loop_thread.join()
+        future.result()  # Wait for the loop() function to complete before exiting
     except KeyboardInterrupt:
         print("Keyboard interrupt detected.")
     finally:
