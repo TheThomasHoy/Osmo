@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Osmo Dashboard</title>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script>
-		$(document).ready(function() {
-			setInterval(function() {
-				$.getJSON('/data', function(data) {
-					$('#moisture').text(data.moisture);
-					$('#pump').text(data.pump);
-				});
-			}, 1000);
-		});
-	</script>
+        <title>Osmo Dashboard</title>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+                $(document).ready(function() {
+                        setInterval(function() {
+                                $.getJSON('/data', function(data) {
+                                        $('#moisture').text(data.moisture);
+                                        $('#pump').text(data.pump_status);
+                                });
+                        }, 1000);
+                });
+        </script>
 </head>
 <body>
-	<h1>Osmo Dashboard</h1>
-	<div>
-		<img src="{{ url_for('camera_object') }}" alt="camera stream">
-	</div>
-	<div>
-		<button type="button" onclick="startStream()">Start Stream</button>
-		<button type="button" onclick="stopStream()">Stop Stream</button>
-	</div>
-	<div>
-		<button type="button" onclick="takeScreenshot()">Take Screenshot</button>
-	</div>
-	<div>
-		<p>Soil moisture: <span id="moisture"></span></p>
-		<p>Pump status: <span id="pump"></span></p>
-	</div>
-	<script>
-		function startStream() {
-			$.post('/start_stream', function() {
-				console.log('Stream started');
-			});
-		}
-		function stopStream() {
-			$.post('/stop_stream', function() {
-				console.log('Stream stopped');
-			});
-		}
-		function takeScreenshot() {
-			$.post('/take_screenshot', function(data) {
-				alert(data);
-			});
-		}
-	</script>
+        <h1>Osmo Dashboard</h1>
+        <div>
+                <img src="{{ url_for('camera_object') }}" alt="camera stream">
+        </div>
+        <div>
+                <button type="button" onclick="startStream()">Start Stream</button>
+                <button type="button" onclick="stopStream()">Stop Stream</button>
+        </div>
+        <div>
+                <button type="button" onclick="takeScreenshot()">Take Screenshot</button>
+        </div>
+        <div>
+                <p>Soil moisture: <span id="moisture"></span></p>
+                <p>Pump status: <span id="pump"></span></p>
+        </div>
+        <script>
+                function startStream() {
+                        $.post('/start_stream', function() {
+                                console.log('Stream started');
+                        });
+                }
+                function stopStream() {
+                        $.post('/stop_stream', function() {
+                                console.log('Stream stopped');
+                        });
+                }
+                function takeScreenshot() {
+                        $.post('/take_screenshot', function(data) {
+                                alert(data);
+                        });
+                }
+        </script>
 </body>
 </html>
