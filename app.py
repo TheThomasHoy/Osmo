@@ -10,18 +10,21 @@ from concurrent.futures import ThreadPoolExecutor
 
 gpio_lock = Lock()
 
-app = Flask(__name__,
-            static_url_path='/static',
-            static_folder='static')
+stream_running = False
 
 executor = ThreadPoolExecutor(max_workers=1)
 
 cap = cv2.VideoCapture(0)
-stream_running = False
 adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
 
 GAIN = 1
 PIN = 7
+
+values = [0]*100
+
+app = Flask(__name__,
+            static_url_path='/static',
+            static_folder='static')
 
 def setup():
     with gpio_lock:
@@ -29,8 +32,6 @@ def setup():
         GPIO.setup(PIN, GPIO.OUT)
         GPIO.output(PIN, GPIO.HIGH)
         time.sleep(0.1)
-
-values = [0]*100
 
 def gen_frames():
     while stream_running:
@@ -86,7 +87,7 @@ def loop():
         with gpio_lock:
             for i in range(100):
                 values[i] = adc.read_adc(0, gain=GAIN)
-            print(max(values))
+           # print(max(values))
 
             if max(values) > 21400:
                 GPIO.output(PIN, GPIO.LOW)
@@ -105,6 +106,7 @@ def destroy():
 
 if __name__ == '__main__':
     setup()
+    # global stream_running
     try:
         future = executor.submit(loop)
         app.run(host='0.0.0.0', port=5000)
