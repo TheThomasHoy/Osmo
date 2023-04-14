@@ -1,51 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-        <title>Osmo Dashboard</title>
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script>
-                $(document).ready(function() {
-                        setInterval(function() {
-                                $.getJSON('/data', function(data) {
-                                        $('#moisture').text(data.moisture);
-                                        $('#pump').text(data.pump_status);
-                                });
-                        }, 1000);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osmo Dashboard</title>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            setInterval(function() {
+                $.getJSON('/data', function(data) {
+                    $('#moisture').text(data.moisture);
+                    $('#pump').text(data.pump_status);
                 });
-        </script>
+            }, 1000);
+        });
+    </script>
+    <!-- Add custom CSS for centering elements -->
+    <style>
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-        <h1>Osmo Dashboard</h1>
-        <div>
-                <img src="{{ url_for('camera_object') }}" alt="camera stream">
+    <div class="container">
+        <h1 class="text-center my-4">Osmo Dashboard</h1>
+        <div class="row">
+            <div class="col-md-12 centered">
+                <img src="{{ url_for('camera_object') }}" alt="camera stream" class="img-fluid">
+            </div>
         </div>
-        <div>
-                <button type="button" onclick="startStream()">Start Stream</button>
-                <button type="button" onclick="stopStream()">Stop Stream</button>
+        <div class="row my-4">
+            <div class="col-md-12 centered">
+                <button type="button" class="btn btn-primary mr-2" onclick="startStream()">Start Stream</button>
+                <button type="button" class="btn btn-secondary" onclick="stopStream()">Stop Stream</button>
+            </div>
         </div>
-        <div>
-                <button type="button" onclick="takeScreenshot()">Take Screenshot</button>
+        <div class="row my-4">
+            <div class="col-md-12 centered">
+                <button type="button" class="btn btn-success" onclick="takeScreenshot()">Take Screenshot</button>
+            </div>
         </div>
-        <div>
-                <p>Soil moisture: <span id="moisture"></span></p>
+        <div class="row my-4">
+            <div class="col-md-12 centered">
+                <p class="mr-4">Soil moisture: <span id="moisture"></span></p>
                 <p>Pump status: <span id="pump"></span></p>
+            </div>
         </div>
-        <script>
-                function startStream() {
-                        $.post('/start_stream', function() {
-                                console.log('Stream started');
-                        });
-                }
-                function stopStream() {
-                        $.post('/stop_stream', function() {
-                                console.log('Stream stopped');
-                        });
-                }
-                function takeScreenshot() {
-                        $.post('/take_screenshot', function(data) {
-                                alert(data);
-                        });
-                }
-        </script>
+    </div>
+    <script>
+        function startStream() {
+            $.post('/start_stream', function() {
+                console.log('Stream started');
+            });
+        }
+        function stopStream() {
+            $.post('/stop_stream', function() {
+                console.log('Stream stopped');
+            });
+        }
+        function takeScreenshot() {
+            $.post('/take_screenshot', function(data) {
+                alert(data);
+            });
+        }
+    </script>
+    <!-- Add Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
