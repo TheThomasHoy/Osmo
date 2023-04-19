@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Screenshot Gallery</h1>
+    <div class="row d-flex flex-wrap justify-content-between mb-3">
+      {% for screenshot in screenshots %}
+        <div class="col-md-4 mb-3">
+          <div class="thumbnail">
+            <img src="{{ url_for('static', filename='screenshots/' + screenshot) }}" alt="Screenshot">
+          </div>
+        </div>
+        {% if loop.index % 3 == 0 %}
+          </div><div class="row d-flex flex-wrap justify-content-between mb-3">
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>  
+  <div class="text-center">
+    <button onclick="location.reload();" class="btn btn-secondary mt-3">Refresh Page</button>
+    <a href="/" class="btn btn-primary mt-3">Back to Osmo Dashboard</a>
+  </div>
+
+  <script>
+    // Refresh page after 31 minutes
+    setTimeout(function(){
+      location.reload();
+    }, 1860000);
+  </script>
+{% endblock %}
