@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osmo Dashboard</title>
-    <!-- Add Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Osmo Dashboard</title>
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
         $(document).ready(function() {
             setInterval(function() {
                 $.getJSON('/data', function(data) {
@@ -17,8 +17,8 @@
             }, 1000);
         });
     </script>
-    <!-- Add custom CSS for centering elements -->
-    <style>
+
+<style>
         .centered {
             display: flex;
             justify-content: center;
@@ -27,32 +27,32 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center my-4">Osmo Dashboard</h1>
-        <div class="row">
-            <div class="col-md-12 centered">
-                <img src="{{ url_for('camera_object') }}" alt="camera stream" class="img-fluid">
-            </div>
+<div class="container">
+<h1 class="text-center my-4">Osmo Dashboard</h1>
+<div class="row">
+    <div class="col-md-6 centered">
+        <img src="/camera" alt="camera stream" class="img-fluid">
+    </div>
+    <div class="col-md-6">
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" class="btn btn-primary mr-2" onclick="startStream()">Start Stream</button>
+            <button type="button" class="btn btn-secondary" onclick="stopStream()">Stop Stream</button>
         </div>
-        <div class="row my-4">
-            <div class="col-md-12 centered">
-                <button type="button" class="btn btn-primary mr-2" onclick="startStream()">Start Stream</button>
-                <button type="button" class="btn btn-secondary" onclick="stopStream()">Stop Stream</button>
-            </div>
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" class="btn btn-success" onclick="takeScreenshot()">Take Screenshot</button>
         </div>
-        <div class="row my-4">
-            <div class="col-md-12 centered">
-                <button type="button" class="btn btn-success" onclick="takeScreenshot()">Take Screenshot</button>
-            </div>
+        <div class="d-flex justify-content-center mb-4">
+            <p class="mr-4">Soil moisture: <span id="moisture"></span></p>
+            <p>Pump status: <span id="pump"></span></p>
         </div>
-        <div class="row my-4">
-            <div class="col-md-12 centered">
-                <p class="mr-4">Soil moisture: <span id="moisture"></span></p>
-                <p>Pump status: <span id="pump"></span></p>
-            </div>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary mr-2" onclick="turnPumpOn()">Turn Pump On</button>
+            <button type="button" class="btn btn-secondary" onclick="turnPumpOff()">Turn Pump Off</button>
         </div>
     </div>
-    <script>
+</div>
+</div>
+<script>
         function startStream() {
             $.post('/start_stream', function() {
                 console.log('Stream started');
@@ -68,9 +68,19 @@
                 alert(data);
             });
         }
+        function turnPumpOn() {
+            $.post('/turn_pump_on', function() {
+                console.log('Pump turned on');
+            });
+        }
+        function turnPumpOff() {
+            $.post('/turn_pump_off', function() {
+                console.log('Pump turned off');
+            });
+        }
     </script>
-    <!-- Add Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
