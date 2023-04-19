@@ -4,7 +4,7 @@ import time
 import threading
 from threading import Lock
 import RPi.GPIO as GPIO
-import Adafruit_ADS1x15 
+import Adafruit_ADS1x15
 from flask import Flask, Response, render_template, jsonify
 from concurrent.futures import ThreadPoolExecutor
 
@@ -13,6 +13,8 @@ gpio_lock = Lock()
 stream_running = False
 
 executor = ThreadPoolExecutor(max_workers=1)
+
+lock = threading.Lock()
 
 cap = cv2.VideoCapture(0)
 adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
@@ -26,6 +28,23 @@ app = Flask(__name__,
             static_url_path='/static',
             static_folder='static')
 
+def take_screenshot_periodically():
+    global cap
+    while True:
+        time.sleep(1800)
+        lock.acquire()
+        success, frame = cap.read()
+        lock.release()
+        if success:
+            filename = 'screenshot_{}.jpg'.format(int(time.time()))
+            cv2.imwrite(os.path.join(app.static_folder, 'screenshots', filename), frame)
+            app.logger.info('Screenshot saved as {}'.format(filename))
+        else:
+            cap = cv2.VideoCapture(1)
+
+screenshot_thread = threading.Thread(target=take_screenshot_periodically)
+screenshot_thread.start()
+
 def setup():
     with gpio_lock:
         GPIO.setmode(GPIO.BOARD)
@@ -34,10 +53,16 @@ def setup():
         time.sleep(0.1)
 
 def gen_frames():
+    global cap
     while stream_running:
+        lock.acquire()
         success, frame = cap.read()
+        lock.release()
         if not success:
-            break
+            cap = cv2.VideoCapture(1)
+            success, frame = cap.read()
+            if not success:
+                break
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
@@ -48,7 +73,11 @@ def camera_object():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/')
-def index():
+def landing():
+    return render_template('landing.html')
+
+@app.route('/dashboard')
+def dashboard():
     return render_template('index.html', stream_running=stream_running)
 
 @app.route('/start_stream', methods=['POST'])
@@ -65,15 +94,19 @@ def stop_stream():
 
 @app.route('/take_screenshot', methods=['POST'])
 def take_screenshot():
+    global cap
+    lock.acquire()
     success, frame = cap.read()
+    lock.release()
     if success:
         filename = 'screenshot_{}.jpg'.format(int(time.time()))
         cv2.imwrite(os.path.join(app.static_folder, 'screenshots', filename), frame)
         app.logger.info('Screenshot saved as {}'.format(filename))
         message = 'Screenshot saved as {}'.format(filename)
-        button = '<button onclick="location.href=\'/\'">Back to Osmo Dashboard</button>'
+        button = '<button onclick="location.href=\'/dashboard\'">Back to Osmo Dashboard</button>'
         return message + '<br>' + button
     else:
+        cap = cv2.VideoCapture(1)
         return 'Error taking screenshot'
 
 @app.route('/data')
@@ -82,23 +115,50 @@ def data():
     pump_status = 'on' if GPIO.input(PIN) == 0 else 'off'
     return jsonify(moisture=moisture, pump_status=pump_status)
 
-def loop():
-    while True:
-        with gpio_lock:
-            for i in range(100):
-                values[i] = adc.read_adc(0, gain=GAIN)
-           # print(max(values))
+# ... imports and other code ...
 
-            if max(values) > 21400:
-                GPIO.output(PIN, GPIO.LOW)
-                # print("Pump is on")
-                # print(PIN)
-                time.sleep(0.1)
-            else:
-                GPIO.output(PIN, GPIO.HIGH)
-                # print("Pump is off")
-                # print(PIN)
-                time.sleep(0.1)
+@app.route('/turn_pump_on', methods=['POST'])
+def turn_pump_on():
+    global loop_enabled
+    with gpio_lock:
+        loop_enabled = False
+        GPIO.output(PIN, GPIO.LOW)
+        print("Pump is on")
+    return "Pump turned on"
+
+@app.route('/turn_pump_off', methods=['POST'])
+def turn_pump_off():
+    global loop_enabled
+    with gpio_lock:
+        loop_enabled = False
+        GPIO.output(PIN, GPIO.HIGH)
+        print("Pump is off")
+    return "Pump turned off"
+
+# ... other routes ...
+
+loop_enabled = True
+
+def loop():
+    global loop_enabled
+    while True:
+        if loop_enabled:
+            with gpio_lock:
+                for i in range(100):
+                    values[i] = adc.read_adc(0, gain=GAIN)
+                if not loop_enabled:
+                    continue
+                if max(values) > 21400:
+                    GPIO.output(PIN, GPIO.LOW)
+                    time.sleep(0.1)
+                else:
+                    GPIO.output(PIN, GPIO.HIGH)
+                    time.sleep(0.1)
+        else:
+            time.sleep(0.1)
+
+# ... other functions and main block ...
+
 
 def destroy():
     GPIO.output(PIN, GPIO.HIGH)
@@ -106,7 +166,6 @@ def destroy():
 
 if __name__ == '__main__':
     setup()
-    # global stream_running
     try:
         future = executor.submit(loop)
         app.run(host='0.0.0.0', port=5000)
