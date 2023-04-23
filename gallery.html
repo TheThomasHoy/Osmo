@@ -8,14 +8,40 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        .page-title {
-            text-align: center;
-        }
-    </style>
+    .page-title {
+        text-align: center;
+    }
+    body {
+        background-color: #C2D4BE;
+        color: #254D34;
+    }
+    .navbar-custom {
+        background-color: #ADBDAA;
+    }
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link {
+        color: #254D34;
+    }
+    .accordion .card-header {
+        background-color: #254D34;
+        border-bottom: none;
+    }
+    .accordion .card-header .btn {
+        color: white;
+        text-decoration: none;
+    }
+    .accordion .card-header .btn:hover,
+    .accordion .card-header .btn:focus {
+        color: white;
+        text-decoration: none;
+        background-color: #0E381E;
+    }
+</style>
+
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-custom">
         <a class="navbar-brand" href="/dashboard">Osmo Dashboard</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
