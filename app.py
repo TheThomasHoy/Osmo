@@ -109,6 +109,17 @@ def take_screenshot():
         cap = cv2.VideoCapture(1)
         return 'Error taking screenshot'
 
+@app.route('/gallery')
+def gallery():
+    return render_template('gallery.html')
+
+@app.route('/get_screenshots')
+def get_screenshots():
+    screenshots_dir = os.path.join(app.static_folder, 'screenshots')
+    screenshots = os.listdir(screenshots_dir)
+    return jsonify(screenshots=screenshots)
+
+
 @app.route('/data')
 def data():
     moisture = max(values)
