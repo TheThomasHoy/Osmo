@@ -26,7 +26,7 @@
             align-items: center;
         }
         body {
-            background-color: #C2D4BE;
+            background-color: #E5F0E1;
             color: #254D34;
         }
         .btn {
@@ -44,6 +44,12 @@
         .navbar-custom .navbar-brand,
         .navbar-custom .nav-link {
             color: #254D34;
+        }
+        .navbar-toggler {
+        border-color: rgba(0, 0, 0, 0.1);
+        }
+        .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(37, 77, 52, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
         }
         .status-rectangle {
             background-color: #adbdaa;
@@ -64,6 +70,9 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">
     <a class="navbar-brand" href="/dashboard">Osmo Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -72,6 +81,7 @@
         </ul>
     </div>
 </nav>
+
     <div class="container container-custom">
         <div class="row">
             <div class="col-md-6 centered">
