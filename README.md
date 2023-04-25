@@ -54,6 +54,7 @@ This section outlines the steps to set up the required hardware components for t
 
 2. **Follow the diagram below
 
+![Osmo Diagram](osmo_diagram.png)
 
 
 4. **Power on your Raspberry Pi**: Once all components are connected, power on your Raspberry Pi and proceed to run the Dockerized Osmo application as described in the "Running on Raspberry Pi" section.
