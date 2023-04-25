@@ -28,6 +28,36 @@ Replace `https://your-osmo-application-url` with the URL of your Osmo applicatio
 
 4. **Connect to the application**: After successful authentication, `cloudflared` will establish a secure tunnel to your application. You can now access the Osmo application on your Raspberry Pi using the Cloudflare Zero Trust connection.
 
+## Hardware Setup
+
+This section outlines the steps to set up the required hardware components for the Osmo project on your Raspberry Pi.
+
+### Components
+
+- Raspberry Pi  4
+- ADS1115
+- Capacitive Moisture Sensor
+- 4 Channel 5V Relay Module
+- 5v submersible water pump
+- Jumper Wires (20 M-F, 20 M-M, 20 F-F)
+- 2 AA & AA battery holder with leads (perhaps upcycled from an old remote control)
+- External power source (USB-C 5v)
+- Micro-Sd Card
+- Router/Wifi connection
+- Solder Kit
+- USB Camera 
+- Monitor, Keyboard & Mouse**
+
+### Steps
+
+1. **Power off your Raspberry Pi**: Before connecting any hardware components, make sure your Raspberry Pi is powered off to avoid any electrical damage.
+
+2. **Follow the diagram below
+
+
+
+4. **Power on your Raspberry Pi**: Once all components are connected, power on your Raspberry Pi and proceed to run the Dockerized Osmo application as described in the "Running on Raspberry Pi" section.
+
 
 
 
