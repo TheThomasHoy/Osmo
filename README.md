@@ -76,13 +76,15 @@ cd Osmo
 
 3. **Build the Docker image**: Build the Docker image using the provided Dockerfile. Replace `your-image-name` with a name of your choice:
 
+```bash
 docker build -t your-image-name .
-
+```
 
 4. **Run the Docker container**: Run the Docker container by mapping a local port (e.g., 4000) to the container's exposed port (e.g., 80). Replace `your-image-name` with the name you used in the previous step:
 
+```bash
 docker run -p 4000:80 your-image-name
-
+```
 
 5. **Access the application**: Open a web browser or a client application and navigate to `http://localhost:4000` (or the port you specified in the previous step) to access the Osmo application.
 
