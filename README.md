@@ -60,5 +60,12 @@ This section outlines the steps to set up the required hardware components for t
 4. **Power on your Raspberry Pi**: Once all components are connected, power on your Raspberry Pi and proceed to run the Dockerized Osmo application as described in the "Running on Raspberry Pi" section.
 
 
+## Running on Raspberry Pi
+
+1. Make sure your Raspberry Pi is connected to the required hardware, as described in the "Hardware Setup" section.
+2. Install Docker on your Raspberry Pi following the instructions at [Install Docker on Raspberry Pi](https://www.docker.com/blog/happy-pi-day-docker-raspberry-pi/).
+3. Build the Docker image: `docker build -t your-image-name .`
+4. Run the Docker container: `docker run -p 4000:80 your-image-name`
+
 
 
