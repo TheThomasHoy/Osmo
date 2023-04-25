@@ -16,7 +16,7 @@ executor = ThreadPoolExecutor(max_workers=1)
 
 lock = threading.Lock()
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(-1)
 adc = Adafruit_ADS1x15.ADS1115(address=0x48, busnum=1)
 
 GAIN = 1
@@ -40,7 +40,7 @@ def take_screenshot_periodically():
             cv2.imwrite(os.path.join(app.static_folder, 'screenshots', filename), frame)
             app.logger.info('Screenshot saved as {}'.format(filename))
         else:
-            cap = cv2.VideoCapture(1)
+            cap = cv2.VideoCapture(-1)
 
 screenshot_thread = threading.Thread(target=take_screenshot_periodically)
 screenshot_thread.start()
@@ -59,7 +59,7 @@ def gen_frames():
         success, frame = cap.read()
         lock.release()
         if not success:
-            cap = cv2.VideoCapture(1)
+            cap = cv2.VideoCapture(-1)
             success, frame = cap.read()
             if not success:
                 break
@@ -106,7 +106,7 @@ def take_screenshot():
         button = '<button onclick="location.href=\'/dashboard\'">Back to Osmo Dashboard</button>'
         return message + '<br>' + button
     else:
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(-1)
         return 'Error taking screenshot'
 
 @app.route('/gallery')
