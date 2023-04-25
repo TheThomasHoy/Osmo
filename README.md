@@ -86,7 +86,7 @@ docker build -t your-image-name .
 docker run -p 4000:80 your-image-name
 ```
 
-5. **Access the application**: Open a web browser or a client application and navigate to `http://localhost:4000` (or the port you specified in the previous step) to access the Osmo application.
+5. **Access the application**: Open a web browser or a client application and navigate to ` https://your-osmo-application-url` (or the port you specified in the previous step) to access the Osmo application.
 
 Note: If you are running the Docker container on a Raspberry Pi with hardware components, make sure to follow the "Hardware Setup" section in the README before running the Docker container.
 
