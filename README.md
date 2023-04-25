@@ -67,6 +67,8 @@ Follow these steps to build and run the Docker image for the Osmo project:
 
 2. **Clone the repository**: Clone the Osmo project repository to your local machine and navigate to the project folder:
 
+
+```bash
 git clone https://github.com/thomashoyops/Osmo.git
 cd Osmo
 
