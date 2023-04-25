@@ -57,17 +57,33 @@ This section outlines the steps to set up the required hardware components for t
 ![Osmo Diagram](osmo_diagram.png)
 
 
-4. **Power on your Raspberry Pi**: Once all components are connected, power on your Raspberry Pi and proceed to run the Dockerized Osmo application as described in the "Running on Raspberry Pi" section.
+4. **Power on your Raspberry Pi**: Once all components are connected, power on your Raspberry Pi and proceed to run the Dockerized Osmo application as described in the "Running the Docker Image" section.
 
+## Running the Docker Image
 
-## Running on Raspberry Pi
+Follow these steps to build and run the Docker image for the Osmo project:
 
-1. Make sure your Raspberry Pi is connected to the required hardware, as described in the "Hardware Setup" section.
-2. Install Docker on your Raspberry Pi following the instructions at [Install Docker on Raspberry Pi](https://www.docker.com/blog/happy-pi-day-docker-raspberry-pi/).
-3. git clone https://github.com/thomashoyops/Osmo.git
+1. **Install Docker**: If you haven't already, install Docker on your machine. You can find the installation instructions for your specific operating system on the [official Docker documentation](https://docs.docker.com/get-docker/).
+
+2. **Clone the repository**: Clone the Osmo project repository to your local machine and navigate to the project folder:
+
+git clone https://github.com/thomashoyops/Osmo.git
 cd Osmo
-4. Build the Docker image: `docker build -t your-image-name .`
-5. Run the Docker container: `docker run -p 4000:80 your-image-name`
+
+
+3. **Build the Docker image**: Build the Docker image using the provided Dockerfile. Replace `your-image-name` with a name of your choice:
+
+docker build -t your-image-name .
+
+
+4. **Run the Docker container**: Run the Docker container by mapping a local port (e.g., 4000) to the container's exposed port (e.g., 80). Replace `your-image-name` with the name you used in the previous step:
+
+docker run -p 4000:80 your-image-name
+
+
+5. **Access the application**: Open a web browser or a client application and navigate to `http://localhost:4000` (or the port you specified in the previous step) to access the Osmo application.
+
+Note: If you are running the Docker container on a Raspberry Pi with hardware components, make sure to follow the "Hardware Setup" section in the README before running the Docker container.
 
 
 
