@@ -52,7 +52,7 @@ This section outlines the steps to set up the required hardware components for t
 
 1. **Power off your Raspberry Pi**: Before connecting any hardware components, make sure your Raspberry Pi is powered off to avoid any electrical damage.
 
-2. **Follow the diagram below
+2. **Follow the diagram below for connecting Capacitative Moisture Sensor 
 
 ![Osmo Diagram](osmo_diagram.png)
 
