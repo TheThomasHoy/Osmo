@@ -8,7 +8,7 @@ Below is the step-by-step set-up
 
 ## Cloudflare Zero Trust Setup
 
-This project is protected by Cloudflare Zero Trust. To access the application, you need to authenticate through Cloudflare Access.
+This project is protected by Cloudflare Zero Trust. To access the application Zero-Trust is not required but encouraged for security. Osmo scripts can also be ran on your own machine.
 
 ### Prerequisites
 
