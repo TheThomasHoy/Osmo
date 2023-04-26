@@ -69,7 +69,7 @@ Follow these steps to build and run the Docker image for the Osmo project:
 
 
 ```bash
-git clone https://github.com/thomashoyops/Osmo.git
+git clone https://github.com/TheThomasHoy/Osmo.git
 cd Osmo
 ```
 
