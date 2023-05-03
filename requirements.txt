@@ -1,1 +1,5 @@
+opencv-python-headless==4.5.4.58
+RPi.GPIO==0.7.1
+Adafruit-ADS1x15==1.1.1
+Flask==2.1.0
 
