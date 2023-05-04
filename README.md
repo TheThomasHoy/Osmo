@@ -63,9 +63,9 @@ This section outlines the steps to set up the required hardware components for t
 
 Follow these steps to build and run the Docker image for the Osmo project:
 
-1. **Install Docker**: If you haven't already, install Docker on your machine. You can find the installation instructions for your specific operating system on the [official Docker documentation](https://docs.docker.com/get-docker/).
+1. **Install Docker**: If you haven't already, install Docker on your raspberry pi. You can find the installation instructions for your specific operating system on the [official Docker documentation](https://docs.docker.com/get-docker/).
 
-2. **Clone the repository**: Clone the Osmo project repository to your local machine and navigate to the project folder:
+2. **Clone the repository**: Clone the Osmo project repository to your raspberry pi through cloudflare ssh and navigate to the project folder:
 
 
 ```bash
