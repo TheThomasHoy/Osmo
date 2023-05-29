@@ -93,4 +93,11 @@ Note: If you are running the Docker container on a Raspberry Pi with hardware co
 
 ## Osmo UI Images
 
+### Landing Page:
 ![Landing Page](Images/OsmoLandingPage.png)
+
+### Osmo Dashboard:
+![Dashboard Page](Images/OsmoDashboard.png)
+
+### Osmo Gallery:
+![Gallery Page](Images/OsmoGallery.png)
